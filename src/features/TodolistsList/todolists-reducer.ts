@@ -1,6 +1,7 @@
 import {todolistsAPI, TodolistType} from '../../api/todolists-api'
 import {Dispatch} from 'redux'
-import {statusAC, statusTP} from "../../app/app-reducer";
+import {SetStatusAC, SetStatusTP} from "../../app/app-reducer";
+
 
 const initialState: Array<TodolistDomainType> = []
 
@@ -39,41 +40,41 @@ export const setTodolistsAC = (todolists: Array<TodolistType>) => ({type: 'SET-T
 // thunks
 export const fetchTodolistsTC = () => {
     return (dispatch: Dispatch<ActionsType>) => {
-        dispatch(statusAC('loading'))
+        dispatch(SetStatusAC('loading'))
         todolistsAPI.getTodolists()
             .then((res) => {
                 dispatch(setTodolistsAC(res.data))
-                dispatch(statusAC('idle'))
+                dispatch(SetStatusAC('idle'))
             })
     }
 }
 export const removeTodolistTC = (todolistId: string) => {
     return (dispatch: Dispatch<ActionsType>) => {
-        dispatch(statusAC('loading'))
+        dispatch(SetStatusAC('loading'))
         todolistsAPI.deleteTodolist(todolistId)
             .then((res) => {
                 dispatch(removeTodolistAC(todolistId))
-                dispatch(statusAC('idle'))
+                dispatch(SetStatusAC('idle'))
             })
     }
 }
 export const addTodolistTC = (title: string) => {
     return (dispatch: Dispatch<ActionsType>) => {
-        dispatch(statusAC('loading'))
+        dispatch(SetStatusAC('loading'))
         todolistsAPI.createTodolist(title)
             .then((res) => {
                 dispatch(addTodolistAC(res.data.data.item))
-                dispatch(statusAC('idle'))
+                dispatch(SetStatusAC('idle'))
             })
     }
 }
 export const changeTodolistTitleTC = (id: string, title: string) => {
     return (dispatch: Dispatch<ActionsType>) => {
-        dispatch(statusAC('loading'))
+        dispatch(SetStatusAC('loading'))
         todolistsAPI.updateTodolist(id, title)
             .then((res) => {
                 dispatch(changeTodolistTitleAC(id, title))
-                dispatch(statusAC('idle'))
+                dispatch(SetStatusAC('idle'))
             })
     }
 }
@@ -88,7 +89,7 @@ type ActionsType =
     | ReturnType<typeof changeTodolistTitleAC>
     | ReturnType<typeof changeTodolistFilterAC>
     | SetTodolistsActionType
-    | statusTP
+    | SetStatusTP
 export type FilterValuesType = 'all' | 'active' | 'completed';
 export type TodolistDomainType = TodolistType & {
     filter: FilterValuesType

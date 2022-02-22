@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect} from 'react'
-import {useDispatch, useSelector} from 'react-redux'
-import {AppRootStateType, useAppSelector} from '../../app/store'
+import {useDispatch} from 'react-redux'
+import {useAppSelector} from '../../app/store'
 import {
     addTodolistTC,
     changeTodolistFilterAC,
@@ -17,7 +17,6 @@ import {Todolist} from './Todolist/Todolist'
 
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-import {statusAC} from "../../app/app-reducer";
 
 export const TodolistsList: React.FC = () => {
 

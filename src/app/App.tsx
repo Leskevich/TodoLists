@@ -13,9 +13,9 @@ import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import {Menu} from '@mui/icons-material';
 import LinearProgress from '@mui/material/LinearProgress/LinearProgress';
-import {useSelector} from "react-redux";
-import {AppRootStateType, useAppSelector} from "./store";
+import {useAppSelector} from "./store";
 import {RequestStatusType} from "./app-reducer";
+import {ErrorSnackbar} from "../components/ErrorSnackbar/ErrorSnackbar";
 
 
 function App() {
@@ -40,6 +40,7 @@ function App() {
             <Container fixed>
                 <TodolistsList/>
             </Container>
+            <ErrorSnackbar/>
         </div>
     )
 }
