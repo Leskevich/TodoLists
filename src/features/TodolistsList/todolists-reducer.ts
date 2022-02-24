@@ -1,6 +1,6 @@
 import {todolistsAPI, TodolistType} from '../../api/todolists-api'
 import {Dispatch} from 'redux'
-import {SetStatusAC, SetStatusTP} from "../../app/app-reducer";
+import {AppActionsType, RequestStatusType, SetErrorAC, SetStatusAC, SetStatusTP} from "../../app/app-reducer";
 
 
 const initialState: Array<TodolistDomainType> = []
@@ -10,19 +10,22 @@ export const todolistsReducer = (state: Array<TodolistDomainType> = initialState
         case 'REMOVE-TODOLIST':
             return state.filter(tl => tl.id !== action.id)
         case 'ADD-TODOLIST':
-            return [{...action.todolist, filter: 'all'}, ...state]
+            return [{...action.todolist, filter: 'all', entityStatus: 'idle'}, ...state]
         case 'CHANGE-TODOLIST-TITLE':
             return state.map(tl => tl.id === action.id ? {...tl, title: action.title} : tl)
         case 'CHANGE-TODOLIST-FILTER':
             return state.map(tl => tl.id === action.id ? {...tl, filter: action.filter} : tl)
         case 'SET-TODOLISTS':
-            return action.todolists.map(tl => ({...tl, filter: 'all'}))
+            return action.todolists.map(tl => ({...tl, filter: 'all', entityStatus: 'idle'}))
+        case "TODOLIST-ENTITY-STATUS":
+            return state.map(tl => tl.id === action.todoId ? {...tl, entityStatus: 'loading'} : tl)
         default:
             return state
     }
 }
 
 // actions
+export const changeTodolistEntityStatusAC = (todoId: string) => ({type: 'TODOLIST-ENTITY-STATUS', todoId} as const)
 export const removeTodolistAC = (id: string) => ({type: 'REMOVE-TODOLIST', id} as const)
 export const addTodolistAC = (todolist: TodolistType) => ({type: 'ADD-TODOLIST', todolist} as const)
 export const changeTodolistTitleAC = (id: string, title: string) => ({
@@ -51,9 +54,14 @@ export const fetchTodolistsTC = () => {
 export const removeTodolistTC = (todolistId: string) => {
     return (dispatch: Dispatch<ActionsType>) => {
         dispatch(SetStatusAC('loading'))
+        dispatch(changeTodolistEntityStatusAC(todolistId))
         todolistsAPI.deleteTodolist(todolistId)
             .then((res) => {
-                dispatch(removeTodolistAC(todolistId))
+                if (res.data.resultCode === 0) {
+                    dispatch(removeTodolistAC(todolistId))
+                } else {
+                    dispatch(SetErrorAC(res.data.messages[0]))
+                }
                 dispatch(SetStatusAC('idle'))
             })
     }
@@ -63,7 +71,11 @@ export const addTodolistTC = (title: string) => {
         dispatch(SetStatusAC('loading'))
         todolistsAPI.createTodolist(title)
             .then((res) => {
-                dispatch(addTodolistAC(res.data.data.item))
+                if (res.data.resultCode === 0) {
+                    dispatch(addTodolistAC(res.data.data.item))
+                } else {
+                    dispatch(SetErrorAC(res.data.messages[0]))
+                }
                 dispatch(SetStatusAC('idle'))
             })
     }
@@ -80,17 +92,22 @@ export const changeTodolistTitleTC = (id: string, title: string) => {
 }
 
 // types
-export type AddTodolistActionType = ReturnType<typeof addTodolistAC>;
-export type RemoveTodolistActionType = ReturnType<typeof removeTodolistAC>;
-export type SetTodolistsActionType = ReturnType<typeof setTodolistsAC>;
 type ActionsType =
     | RemoveTodolistActionType
     | AddTodolistActionType
     | ReturnType<typeof changeTodolistTitleAC>
     | ReturnType<typeof changeTodolistFilterAC>
     | SetTodolistsActionType
-    | SetStatusTP
+    | AppActionsType
+    | changeTodolistEntityStatusType
+
+export  type changeTodolistEntityStatusType = ReturnType<typeof changeTodolistEntityStatusAC>
+export type AddTodolistActionType = ReturnType<typeof addTodolistAC>;
+export type RemoveTodolistActionType = ReturnType<typeof removeTodolistAC>;
+export type SetTodolistsActionType = ReturnType<typeof setTodolistsAC>;
 export type FilterValuesType = 'all' | 'active' | 'completed';
 export type TodolistDomainType = TodolistType & {
     filter: FilterValuesType
+    entityStatus: RequestStatusType
 }
+

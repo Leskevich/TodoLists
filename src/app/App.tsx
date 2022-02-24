@@ -20,12 +20,9 @@ import {ErrorSnackbar} from "../components/ErrorSnackbar/ErrorSnackbar";
 
 function App() {
     const liner = useAppSelector<RequestStatusType>(state=>state.app.status)
-
     return (
-
         <div className="App">
             <AppBar position="static">
-
                 <Toolbar>
                     <IconButton edge="start" color="inherit" aria-label="menu">
                         <Menu/>
