@@ -1,4 +1,5 @@
 import axios, {AxiosResponse} from "axios";
+import {ResponseType} from "./todolists-api";
 
 const instance = axios.create({
     baseURL: 'https://social-network.samuraijs.com/api/1.1/',
@@ -11,22 +12,16 @@ const instance = axios.create({
 
 export const authAPI = {
     login(data:LoginParamsType) {
-        instance.post <LoginParamsType,AxiosResponse<ResponseType>>('auth/login',data)
+        return  instance.post <LoginParamsType,AxiosResponse<ResponseType>>('auth/login',data)
     }
 }
 //type
 export type LoginParamsType = {
     email: string
     password: string
-    rememberMe: boolean
-    captcha: string
+    rememberMe?: boolean
+    captcha?: string
 }
 
-type ResponseType = {
-    resultCode: number
-    messages: [],
-    data: {
-        userId: number
-    }
-}
+
 
