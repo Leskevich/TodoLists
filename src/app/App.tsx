@@ -11,8 +11,10 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import LinearProgress from '@mui/material/LinearProgress';
-import { Menu } from '@mui/icons-material';
+import {Menu, Router} from '@mui/icons-material';
 import { ErrorSnackbar } from '../components/ErrorSnackbar/ErrorSnackbar'
+import {Login} from "../features/Login/Login";
+import {Navigate, Route, Routes } from 'react-router-dom'
 
 type PropsType = {
     demo?: boolean
@@ -36,7 +38,13 @@ function App({demo = false}: PropsType) {
                 {status === 'loading' && <LinearProgress/>}
             </AppBar>
             <Container fixed>
-                <TodolistsList demo={demo}/>
+                <Routes>
+                    <Route path="/" element={<TodolistsList demo={demo}/>} />
+                    <Route path="Login" element={<Login/>} />
+                    <Route path="404" element={<h1>404: PAGE NOT FOUND</h1>}/>
+                    <Route path="*" element={<Navigate to={'404'} />}/>
+                </Routes>
+
             </Container>
         </div>
     )
