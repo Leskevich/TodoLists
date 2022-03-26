@@ -8,8 +8,10 @@ import FormLabel from '@mui/material/FormLabel';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import {useFormik} from "formik";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {loginTC} from "./auth-reducer";
+import {AppRootStateType} from "../../app/store";
+import {Navigate, useNavigate} from 'react-router-dom';
 
 type FormikErrorType = {
     email?: string
@@ -19,6 +21,8 @@ type FormikErrorType = {
 
 export const Login = () => {
     const dispatch = useDispatch()
+    const navigate = useNavigate()
+    const isLoggedIn = useSelector<AppRootStateType, boolean>((state)=>state.auth.isLoggedIn)
     const formik = useFormik({
         initialValues: {
             email: '',
@@ -34,7 +38,7 @@ export const Login = () => {
             }
             if (!values.password) {
                 errors.password = 'Required';
-            } else if (values.password.length > 20) {
+            } else if (values.password.length < 3) {
                 errors.password = 'Must be 20 characters or less';
             }
             return errors;
@@ -43,6 +47,9 @@ export const Login = () => {
             dispatch(loginTC(values))
         },
     })
+    if (isLoggedIn){
+        navigate('/')
+    }
 
 
     return <Grid container justifyContent={'center'}>
@@ -72,8 +79,7 @@ export const Login = () => {
                                    margin="normal"
                                    {...formik.getFieldProps('password')}
                         />
-                        {formik.touched.password && formik.errors.password &&
-                            <div style={{color: 'red'}}>{formik.errors.password}</div>}
+                        {formik.touched.password && formik.errors.password && <div style={{color: 'red'}}>{formik.errors.password}</div>}
                         <FormControlLabel label={'Remember me'}
                                           control={<Checkbox
                                               {...formik.getFieldProps('rememberMe')}

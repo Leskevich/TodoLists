@@ -2,7 +2,6 @@ import {Dispatch} from 'redux'
 import {SetAppErrorActionType, setAppStatusAC, SetAppStatusActionType} from '../../app/app-reducer'
 import {authAPI, LoginParamsType} from "../../api/login-api";
 import {handleServerAppError, handleServerNetworkError} from "../../utils/error-utils";
-import {addTaskAC} from "../TodolistsList/tasks-reducer";
 
 const initialState = {
     isLoggedIn: false
@@ -37,6 +36,17 @@ export const loginTC = (data: LoginParamsType) => (dispatch: Dispatch<ActionsTyp
         })
 
 }
+export const initializeAppTC = () =>(dispatch: Dispatch<ActionsType>)=>{
+    authAPI.me()
+        .then(res =>{
+            if (res.data.resultCode===0){
+                dispatch(setIsLoggedInAC(true))
+            }else {
+
+            }
+        })
+}
+
 
 // types
 type ActionsType = ReturnType<typeof setIsLoggedInAC> | SetAppStatusActionType | SetAppErrorActionType
