@@ -21,8 +21,8 @@ type FormikErrorType = {
 
 export const Login = () => {
     const dispatch = useDispatch()
-    const navigate = useNavigate()
-    const isLoggedIn = useSelector<AppRootStateType, boolean>((state)=>state.auth.isLoggedIn)
+    // const navigate = useNavigate()
+    const isLoggedIn = useSelector<AppRootStateType, boolean>((state) => state.auth.isLoggedIn)
     const formik = useFormik({
         initialValues: {
             email: '',
@@ -47,10 +47,10 @@ export const Login = () => {
             dispatch(loginTC(values))
         },
     })
-    if (isLoggedIn){
-        navigate('/')
+    if (isLoggedIn) {
+        // navigate('/')
+       return  <Navigate to={'/'}/>
     }
-
 
     return <Grid container justifyContent={'center'}>
         <Grid item justifyContent={'center'}>
@@ -79,15 +79,13 @@ export const Login = () => {
                                    margin="normal"
                                    {...formik.getFieldProps('password')}
                         />
-                        {formik.touched.password && formik.errors.password && <div style={{color: 'red'}}>{formik.errors.password}</div>}
+                        {formik.touched.password && formik.errors.password &&
+                            <div style={{color: 'red'}}>{formik.errors.password}</div>}
                         <FormControlLabel label={'Remember me'}
                                           control={<Checkbox
-                                              {...formik.getFieldProps('rememberMe')}
-                                          />}/>
+                                              {...formik.getFieldProps('rememberMe')}/>}/>
                         {formik.errors.rememberMe && <div style={{color: 'red'}}>{formik.errors.rememberMe}</div>}
-                        <Button type={'submit'} variant={'contained'} color={'primary'}>
-                            Login
-                        </Button>
+                        <Button type={'submit'} variant={'contained'} color={'primary'}>Login</Button>
                     </FormGroup>
                 </form>
             </FormControl>

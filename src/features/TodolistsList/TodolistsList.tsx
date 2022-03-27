@@ -16,7 +16,8 @@ import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import { AddItemForm } from '../../components/AddItemForm/AddItemForm'
 import { Todolist } from './Todolist/Todolist'
-import {useNavigate} from "react-router-dom";
+import {Navigate, useNavigate} from "react-router-dom";
+import {meAppTC} from "../Login/auth-reducer";
 
 type PropsType = {
     demo?: boolean
@@ -29,12 +30,12 @@ export const TodolistsList: React.FC<PropsType> = ({demo = false}) => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
+
     useEffect(() => {
         if (demo||!isLoggedIn) {
             return;
         }
-        const thunk = fetchTodolistsTC()
-        dispatch(thunk)
+        dispatch(fetchTodolistsTC())
     }, [])
 
     const removeTask = useCallback(function (id: string, todolistId: string) {
@@ -77,8 +78,8 @@ export const TodolistsList: React.FC<PropsType> = ({demo = false}) => {
         dispatch(thunk)
     }, [dispatch])
 
-if (isLoggedIn){
-    navigate('Login')
+if (!isLoggedIn){
+    return  <Navigate to={'login'}/>
 }
 
     return <>

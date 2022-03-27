@@ -1,7 +1,7 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import './App.css'
 import {TodolistsList} from '../features/TodolistsList/TodolistsList'
-import {useSelector} from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 import {AppRootStateType} from './store'
 import {RequestStatusType} from './app-reducer'
 import AppBar from '@mui/material/AppBar';
@@ -15,13 +15,30 @@ import {Menu} from '@mui/icons-material';
 import {ErrorSnackbar} from '../components/ErrorSnackbar/ErrorSnackbar'
 import {Login} from "../features/Login/Login";
 import {Navigate, Route, Routes} from 'react-router-dom'
+import {logoutTC, meAppTC} from "../features/Login/auth-reducer";
+import {dividerClasses} from "@mui/material";
 
 type PropsType = {
     demo?: boolean
 }
 
 function App({demo = false}: PropsType) {
+    const dispatch = useDispatch()
     const status = useSelector<AppRootStateType, RequestStatusType>((state) => state.app.status)
+    const initialized = useSelector<AppRootStateType, boolean>((state) => state.app.isInitialized)
+    const isLoggedIn = useSelector<AppRootStateType, boolean>((state) => state.auth.isLoggedIn)
+
+    useEffect(() => {
+        dispatch(meAppTC())
+    }, [])
+    if (!initialized) {
+        return <div>loading</div>
+    }
+
+    function logoutHandler() {
+        dispatch(logoutTC())
+    }
+
     return (
         <div className="App">
             <ErrorSnackbar/>
@@ -33,16 +50,16 @@ function App({demo = false}: PropsType) {
                     <Typography variant="h6">
                         News
                     </Typography>
-                    <Button color="inherit">Login</Button>
+                    {isLoggedIn && <Button color="inherit" onClick={logoutHandler}>Logout</Button>}
                 </Toolbar>
                 {status === 'loading' && <LinearProgress/>}
             </AppBar>
             <Container fixed>
                 <Routes>
-                    <Route path="/" element={<TodolistsList demo={demo}/>} />
-                    <Route path="Login" element={<Login/>} />
+                    <Route path="/" element={<TodolistsList demo={demo}/>}/>
+                    <Route path="Login" element={<Login/>}/>
                     <Route path="404" element={<h1>404: PAGE NOT FOUND</h1>}/>
-                    <Route path="*" element={<Navigate to={'404'} />}/>
+                    <Route path="*" element={<Navigate to={'404'}/>}/>
                 </Routes>
 
             </Container>
